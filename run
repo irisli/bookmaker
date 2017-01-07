@@ -1,1 +1,2 @@
-nodemon -x 'node --harmony --harmony-async-await ./bookmaker.js'
+echo "module.exports = $(git rev-list HEAD --count)" > height.js
+nodemon --ignore 'height.js' -x 'node --harmony --harmony-async-await ./bookmaker.js'

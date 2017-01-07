@@ -1,9 +1,13 @@
 const StellarSdk = require('stellar-sdk');
 const keys = require('./keys');
+const version = require('./height');
+const deleteAllOffers = require('./deleteAllOffers');
 
 const Server = new StellarSdk.Server('https://horizon.stellar.org');
+StellarSdk.Network.usePublicNetwork();
 
 async function main() {
+try {
 
 // http://www.investopedia.com/ask/answers/06/eurusd.asp
 // In a currency pair, the first currency in the pair is called the base currency and the second is called the quote currency.
@@ -17,17 +21,35 @@ let baseBuying = new StellarSdk.Asset('XLM', null);
 let counterSelling = new StellarSdk.Asset('USD', keys.issuer);
 
 
-let res = await Server.orderbook(baseBuying, counterSelling).call();
-console.log(res)
+let orderbook = await Server.orderbook(baseBuying, counterSelling).call();
+console.log(orderbook)
+
+
+let offersForBuyer = await Server.offers('accounts', keys.buyer.accountId()).call()
+let offersForSeller = await Server.offers('accounts', keys.seller.accountId()).call()
+
+let buyerAccount = await Server.loadAccount(keys.buyer.accountId());
+let sellerAccount = await Server.loadAccount(keys.seller.accountId());
+
+[
+  await deleteAllOffers(Server, buyerAccount, keys.buyer),
+  await deleteAllOffers(Server, sellerAccount, keys.seller)
+];
+
+
+console.log('hii')
 
 
 
 
 
+
+
+} catch(e) {
+  console.error(e);
 }
+}
+
 main();
-
-
-
 
 
