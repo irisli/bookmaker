@@ -1,0 +1,16 @@
+{
+  "name": "bookmaker",
+  "version": "0.0.0",
+  "author": "Iris Li",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "start": "node --harmony --harmony-async-await ./bookmaker.js"
+  },
+  "dependencies": {
+    "stellar-sdk": "^0.6.2"
+  },
+  "engines": {
+    "node": ">=7.4.0"
+  }
+}
