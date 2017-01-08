@@ -4,7 +4,7 @@ const version = require('./height');
 // account should be in the format of StellarSdk.Account
 // keypair should be in the format of StellarSdk.Keypair
 module.exports = async function deleteAllOffers(Server, account, keypair) {
-  // Get the sequence number
+  // Get the offer IDs
   let offersForTarget = await Server.offers('accounts', keypair.accountId())
     .order('asc')
     .call()
@@ -26,7 +26,7 @@ module.exports = async function deleteAllOffers(Server, account, keypair) {
     transaction = transaction.addOperation(StellarSdk.Operation.manageOffer({
       // It doesn't matter who the issuer is since this is just going to get deleted
       buying: StellarSdk.Asset.native(),
-      selling: new StellarSdk.Asset('USD', account.accountId()),
+      selling: new StellarSdk.Asset('0000', account.accountId()),
       amount: '0',
       price: '1',
       offerId

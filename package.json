@@ -8,6 +8,7 @@
     "start": "node --harmony --harmony-async-await ./bookmaker.js"
   },
   "dependencies": {
+    "bignumber.js": "^3.0.1",
     "stellar-sdk": "^0.6.2"
   },
   "engines": {

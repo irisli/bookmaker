@@ -2,6 +2,7 @@ const StellarSdk = require('stellar-sdk');
 const keys = require('./keys');
 const version = require('./height');
 const deleteAllOffers = require('./deleteAllOffers');
+const createOffer = require('./createOffer');
 
 const Server = new StellarSdk.Server('https://horizon.stellar.org');
 StellarSdk.Network.usePublicNetwork();
@@ -21,8 +22,9 @@ let baseBuying = new StellarSdk.Asset('XLM', null);
 let counterSelling = new StellarSdk.Asset('USD', keys.issuer);
 
 
-let orderbook = await Server.orderbook(baseBuying, counterSelling).call();
-console.log(orderbook)
+let initialOrderbook = await Server.orderbook(baseBuying, counterSelling).call();
+console.log('Initial orderbook')
+console.log(initialOrderbook)
 
 
 let offersForBuyer = await Server.offers('accounts', keys.buyer.accountId()).call()
@@ -37,10 +39,35 @@ let sellerAccount = await Server.loadAccount(keys.seller.accountId());
 ];
 
 
-console.log('hii')
+let clearedOrderbook = await Server.orderbook(baseBuying, counterSelling).call();
+console.log('Cleared orderbook')
+console.log(clearedOrderbook)
+
+
+let buyOpts = {
+  type: 'buy',
+  baseBuying,
+  counterSelling,
+  price: 0.002 + Math.random().toPrecision(5)/10000,
+  amount: 5000, // 5000 lumens
+};
+
+let sellOpts = {
+  type: 'sell',
+  baseBuying,
+  counterSelling,
+  price: 0.0025 + Math.random().toPrecision(5)/10000,
+  amount: 4500, // 4500 lumens
+};
+
+await createOffer(Server, buyerAccount, keys.buyer, buyOpts);
+await createOffer(Server, sellerAccount, keys.seller, sellOpts);
 
 
 
+let populatedOrderbook = await Server.orderbook(baseBuying, counterSelling).call();
+console.log('Populated orderbook')
+console.log(populatedOrderbook)
 
 
 
