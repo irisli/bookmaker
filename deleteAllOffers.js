@@ -1,32 +1,31 @@
 const StellarSdk = require('stellar-sdk');
-const version = require('./height');
 
 // account should be in the format of StellarSdk.Account
 // keypair should be in the format of StellarSdk.Keypair
 module.exports = async function deleteAllOffers(Server, account, keypair) {
   // Get the offer IDs
-  let offersForTarget = await Server.offers('accounts', keypair.accountId())
+  const offersForTarget = await Server.offers('accounts', keypair.accountId())
     .order('asc')
-    .call()
+    .call();
 
   if (offersForTarget.records.length === 0) {
     return 0;
   }
 
-  var transaction = new StellarSdk.TransactionBuilder(account)
-  for (var i = 0; i < offersForTarget.records.length; i++) {
-    let offerId = offersForTarget.records[i].id;
+  let transaction = new StellarSdk.TransactionBuilder(account);
+  offersForTarget.records.forEach((record) => {
+    const offerId = record.id;
     transaction = transaction.addOperation(StellarSdk.Operation.manageOffer({
       // It doesn't matter who the issuer is since this is just going to get deleted
       buying: StellarSdk.Asset.native(),
       selling: new StellarSdk.Asset('0000', account.accountId()),
       amount: '0',
       price: '1',
-      offerId
-    }))
-  }
+      offerId,
+    }));
+  });
 
-  transaction = transaction.addMemo(StellarSdk.Memo.text('bookmaker ' + version))
+  // transaction = transaction.addMemo(StellarSdk.Memo.text(`bookmaker ${version}`));
   transaction = transaction.build();
 
   transaction.sign(keypair);
@@ -34,9 +33,9 @@ module.exports = async function deleteAllOffers(Server, account, keypair) {
   // Let's see the XDR (encoded in base64) of the transaction we just built
   // console.log(transaction.toEnvelope().toXDR('base64'));
 
-  let transactionResult = await Server.submitTransaction(transaction);
+  const transactionResult = await Server.submitTransaction(transaction);
   // console.log(JSON.stringify(transactionResult, null, 2));
   // console.log('\nSuccess! View the transaction at: ');
   // console.log(transactionResult._links.transaction.href);
   return offersForTarget.records.length;
-}
+};

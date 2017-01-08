@@ -1,4 +1,5 @@
 const StellarSdk = require('stellar-sdk');
+
 module.exports = {
   // Issuing account
   // GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA

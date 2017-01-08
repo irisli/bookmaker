@@ -21,8 +21,8 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
   let sdkPrice;
   let sdkAmount;
 
-  let bigOptsPrice = new BigNumber(opts.price.toPrecision(15));
-  let bigOptsAmount = new BigNumber(opts.amount.toPrecision(15));
+  const bigOptsPrice = new BigNumber(opts.price.toPrecision(15));
+  const bigOptsAmount = new BigNumber(opts.amount.toPrecision(15));
 
   if (opts.type === 'buy') {
     sdkBuying = opts.baseBuying; // lumens
@@ -44,12 +44,12 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
 
     // Buying 10 USD (10*450)
     // Selling 4500 lumens
-    sdkAmount = new BigNumber(bigOptsAmount).toFixed(7)
+    sdkAmount = new BigNumber(bigOptsAmount).toFixed(7);
   } else {
-    throw new Error('Invalid opts.type ' + opts.type);
+    throw new Error(`Invalid opts.type ${opts.type}`);
   }
 
-  let operationOpts = {
+  const operationOpts = {
     buying: sdkBuying,
     selling: sdkSelling,
     amount: String(sdkAmount),
@@ -57,15 +57,15 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
     offerId: 0, // 0 for new offer
   };
 
-  var transaction = new StellarSdk.TransactionBuilder(account)
+  const transaction = new StellarSdk.TransactionBuilder(account)
     .addOperation(StellarSdk.Operation.manageOffer(operationOpts))
-    .addMemo(StellarSdk.Memo.text('bookmaker ' + version))
+    .addMemo(StellarSdk.Memo.text(`bookmaker ${version}`))
     .build();
   transaction.sign(keypair);
 
-  let transactionResult = await Server.submitTransaction(transaction);
+  const transactionResult = await Server.submitTransaction(transaction);
   // console.log('\n');
   // console.log(operationOpts);
   // console.log('View the transaction at: https://www.stellar.org/laboratory/#xdr-viewer?type=TransactionEnvelope&network=public&input=' + encodeURIComponent(transactionResult.envelope_xdr));
   // console.log('\n');
-}
+};

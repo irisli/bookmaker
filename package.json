@@ -13,5 +13,9 @@
   },
   "engines": {
     "node": ">=7.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.13.0",
+    "eslint-config-airbnb": "^13.0.0"
   }
 }
