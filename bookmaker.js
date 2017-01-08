@@ -3,14 +3,16 @@ const keys = require('./keys');
 const version = require('./height');
 const deleteAllOffers = require('./deleteAllOffers');
 const createOffer = require('./createOffer');
+const changeTrust = require('./changeTrust');
+const simplePayment = require('./simplePayment');
 
 // const Server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 const Server = new StellarSdk.Server('https://horizon.stellar.org');
 StellarSdk.Network.usePublicNetwork();
 
 let baseBuying = new StellarSdk.Asset('XLM', null);
-let counterSelling = new StellarSdk.Asset('USD', keys.issuer);
-let OrderBookSetup = Server.orderbook(counterSelling, baseBuying);
+let counterSelling = new StellarSdk.Asset('USD', keys.issuer.accountId());
+let OrderBookSetup = Server.orderbook(baseBuying, counterSelling);
 
 async function main() {
 try {
@@ -24,17 +26,50 @@ try {
 // Counter: USD
 
 
-
-// let offersForBuyer = await Server.offers('accounts', keys.buyer.accountId()).call()
-// let offersForSeller = await Server.offers('accounts', keys.seller.accountId()).call()
-
 let buyerAccount = await Server.loadAccount(keys.buyer.accountId());
 let sellerAccount = await Server.loadAccount(keys.seller.accountId());
+let issuerAccount = await Server.loadAccount(keys.issuer.accountId());
 
-[
-  await deleteAllOffers(Server, buyerAccount, keys.buyer),
-  await deleteAllOffers(Server, sellerAccount, keys.seller)
-];
+
+// Extend trust lines to issuer
+let changeTrustOp = {
+  asset: counterSelling
+}
+
+// Trust the issuer
+await Promise.all([
+  changeTrust(Server, buyerAccount, keys.buyer, changeTrustOp),
+  changeTrust(Server, sellerAccount, keys.seller, changeTrustOp),
+]);
+
+
+// Give the testers some money
+await Promise.all([
+  simplePayment(Server, issuerAccount, keys.issuer, {
+    destination: buyerAccount.accountId(),
+    asset: counterSelling,
+    amount: '25', // $25 USD
+  }),
+  simplePayment(Server, issuerAccount, keys.issuer, {
+    destination: sellerAccount.accountId(),
+    asset: counterSelling,
+    amount: '25', // $25 USD
+  }),
+]);
+
+// Look at the new balances
+buyerAccount = await Server.loadAccount(keys.buyer.accountId());
+sellerAccount = await Server.loadAccount(keys.seller.accountId());
+console.log('Buyer balances ', buyerAccount.balances)
+console.log('Seller balances ', sellerAccount.balances)
+
+let offersForBuyer = await Server.offers('accounts', keys.buyer.accountId()).call()
+let offersForSeller = await Server.offers('accounts', keys.seller.accountId()).call()
+
+await Promise.all([
+  deleteAllOffers(Server, buyerAccount, keys.buyer),
+  deleteAllOffers(Server, sellerAccount, keys.seller)
+]);
 
 
 let clearedOrderbook = await OrderBookSetup.call();
@@ -47,7 +82,7 @@ let buyOpts = {
   type: 'buy',
   baseBuying,
   counterSelling,
-  price: 0.0020, // + Math.random().toPrecision(5)/100000,
+  price: 0.0020 + Math.random().toPrecision(5)/10000/2,
   amount: 5000, // 5000 lumens
 };
 
@@ -55,22 +90,19 @@ let sellOpts = {
   type: 'sell',
   baseBuying,
   counterSelling,
-  price: 0.0025,// + Math.random().toPrecision(5)/100000,
-  amount: 4500, // 4500 lumens
+  price: 0.0025 + Math.random().toPrecision(5)/10000/2,
+  amount: 4000, // 4500 lumens
 };
 
-[
-  await createOffer(Server, buyerAccount, keys.buyer, buyOpts),
-  await createOffer(Server, sellerAccount, keys.seller, sellOpts),
-]
+await Promise.all([
+  createOffer(Server, buyerAccount, keys.buyer, buyOpts), // This one is bugged
+  createOffer(Server, sellerAccount, keys.seller, sellOpts),
+]);
 console.log('Offers successfully created');
-
 
 let populatedOrderbook = await OrderBookSetup.call();
 console.log('Resulting orderbook')
 console.log(populatedOrderbook)
-
-
 
 
 } catch(e) {

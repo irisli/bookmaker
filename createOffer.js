@@ -21,16 +21,16 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
   let sdkPrice;
   let sdkAmount;
 
-  let bigOptsPrice = new BigNumber(opts.price);
-  let bigOptsAmount = new BigNumber(opts.amount);
-
+  let bigOptsPrice = new BigNumber(opts.price.toPrecision(15));
+  let bigOptsAmount = new BigNumber(opts.amount.toPrecision(15));
 
   if (opts.type === 'buy') {
     sdkBuying = opts.baseBuying; // lumens
     sdkSelling = opts.counterSelling; // USD
 
-    // selling/buying = 1 USD/500XLM = 0.0020
-    sdkPrice = new BigNumber(bigOptsPrice);
+    // Docs says selling/buying = 1 USD/500XLM = 0.0020
+    // But I think the docs are incorrect
+    sdkPrice = new BigNumber(1).dividedBy(bigOptsPrice);
 
     // Selling 10 USD (5000 lumens * 0.0020 price = $10)
     sdkAmount = new BigNumber(bigOptsAmount).times(bigOptsPrice).toFixed(7);
@@ -38,8 +38,9 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
     sdkBuying = opts.counterSelling; // USD
     sdkSelling = opts.baseBuying; // lumens
 
-    // selling/buying = 450 XLM/1USD
-    sdkPrice = new BigNumber(1).dividedBy(bigOptsPrice);
+    // Docs says selling/buying = 450 XLM/1USD
+    // But I think the docs are incorrect
+    sdkPrice = new BigNumber(bigOptsPrice);
 
     // Buying 10 USD (10*450)
     // Selling 4500 lumens
@@ -63,9 +64,8 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
   transaction.sign(keypair);
 
   let transactionResult = await Server.submitTransaction(transaction);
-  console.log('\n');
-  console.log(opts.type + ' transaction');
-  console.log(operationOpts);
-  console.log('View the transaction at: https://www.stellar.org/laboratory/#xdr-viewer?type=TransactionEnvelope&network=public&input=' + encodeURIComponent(transactionResult.envelope_xdr));
-  console.log('\n');
+  // console.log('\n');
+  // console.log(operationOpts);
+  // console.log('View the transaction at: https://www.stellar.org/laboratory/#xdr-viewer?type=TransactionEnvelope&network=public&input=' + encodeURIComponent(transactionResult.envelope_xdr));
+  // console.log('\n');
 }

@@ -14,13 +14,6 @@ module.exports = async function deleteAllOffers(Server, account, keypair) {
   }
 
   var transaction = new StellarSdk.TransactionBuilder(account)
-    // .addOperation(StellarSdk.Operation.payment({
-    //   // It doesn't matter who the issuer is. So this is just the target's account
-    //   destination: account.accountId(),
-    //   asset: StellarSdk.Asset.native(),
-    //   amount: '0.1',
-    // }))
-
   for (var i = 0; i < offersForTarget.records.length; i++) {
     let offerId = offersForTarget.records[i].id;
     transaction = transaction.addOperation(StellarSdk.Operation.manageOffer({
