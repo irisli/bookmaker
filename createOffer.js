@@ -29,20 +29,21 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
     sdkBuying = opts.baseBuying; // lumens
     sdkSelling = opts.counterSelling; // USD
 
-    // 1 USD/500XLM = 0.0020
-    sdkPrice = new BigNumber(1).dividedBy(bigOptsPrice);
+    // selling/buying = 1 USD/500XLM = 0.0020
+    sdkPrice = new BigNumber(bigOptsPrice);
 
     // Selling 10 USD (5000 lumens * 0.0020 price = $10)
-    sdkAmount = new BigNumber(bigOptsAmount).times(bigOptsPrice);
+    sdkAmount = new BigNumber(bigOptsAmount).times(bigOptsPrice).toFixed(7);
   } else if (opts.type === 'sell') {
     sdkBuying = opts.counterSelling; // USD
     sdkSelling = opts.baseBuying; // lumens
 
-    // 450 XLM/1USD
-    sdkPrice = new BigNumber(bigOptsPrice).toPrecision(7);
+    // selling/buying = 450 XLM/1USD
+    sdkPrice = new BigNumber(1).dividedBy(bigOptsPrice);
 
     // Buying 10 USD (10*450)
-    sdkAmount = new BigNumber(bigOptsAmount)
+    // Selling 4500 lumens
+    sdkAmount = new BigNumber(bigOptsAmount).toFixed(7)
   } else {
     throw new Error('Invalid opts.type ' + opts.type);
   }
@@ -63,6 +64,7 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
 
   let transactionResult = await Server.submitTransaction(transaction);
   console.log('\n');
+  console.log(opts.type + ' transaction');
   console.log(operationOpts);
   console.log('View the transaction at: https://www.stellar.org/laboratory/#xdr-viewer?type=TransactionEnvelope&network=public&input=' + encodeURIComponent(transactionResult.envelope_xdr));
   console.log('\n');

@@ -9,6 +9,10 @@ module.exports = async function deleteAllOffers(Server, account, keypair) {
     .order('asc')
     .call()
 
+  if (offersForTarget.records.length === 0) {
+    return 0;
+  }
+
   var transaction = new StellarSdk.TransactionBuilder(account)
     // .addOperation(StellarSdk.Operation.payment({
     //   // It doesn't matter who the issuer is. So this is just the target's account
@@ -16,10 +20,6 @@ module.exports = async function deleteAllOffers(Server, account, keypair) {
     //   asset: StellarSdk.Asset.native(),
     //   amount: '0.1',
     // }))
-
-  if (offersForTarget.records.length === 0) {
-    return 0;
-  }
 
   for (var i = 0; i < offersForTarget.records.length; i++) {
     let offerId = offersForTarget.records[i].id;

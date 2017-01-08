@@ -10,7 +10,7 @@ StellarSdk.Network.usePublicNetwork();
 
 let baseBuying = new StellarSdk.Asset('XLM', null);
 let counterSelling = new StellarSdk.Asset('USD', keys.issuer);
-let OrderBookSetup = Server.orderbook(baseBuying, counterSelling);
+let OrderBookSetup = Server.orderbook(counterSelling, baseBuying);
 
 async function main() {
 try {
@@ -42,7 +42,7 @@ console.log('Orderbook successfully cleared')
 // console.log(clearedOrderbook)
 
 
-// Each of thes two offers should be about $10 USD
+// Each of these two offers should be about $10 USD
 let buyOpts = {
   type: 'buy',
   baseBuying,
@@ -61,7 +61,7 @@ let sellOpts = {
 
 [
   await createOffer(Server, buyerAccount, keys.buyer, buyOpts),
-  // await createOffer(Server, sellerAccount, keys.seller, sellOpts),
+  await createOffer(Server, sellerAccount, keys.seller, sellOpts),
 ]
 console.log('Offers successfully created');
 
