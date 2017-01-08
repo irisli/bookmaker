@@ -21,49 +21,49 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
   let sdkPrice;
   let sdkAmount;
 
+  let bigOptsPrice = new BigNumber(opts.price);
+  let bigOptsAmount = new BigNumber(opts.amount);
+
 
   if (opts.type === 'buy') {
     sdkBuying = opts.baseBuying; // lumens
     sdkSelling = opts.counterSelling; // USD
 
     // 1 USD/500XLM = 0.0020
-    sdkPrice = new BigNumber(opts.price).toPrecision(7);
+    sdkPrice = new BigNumber(1).dividedBy(bigOptsPrice);
 
     // Selling 10 USD (5000 lumens * 0.0020 price = $10)
-    sdkAmount = new BigNumber(opts.amount).times(opts.price).toPrecision(7);
+    sdkAmount = new BigNumber(bigOptsAmount).times(bigOptsPrice);
   } else if (opts.type === 'sell') {
     sdkBuying = opts.counterSelling; // USD
     sdkSelling = opts.baseBuying; // lumens
 
     // 450 XLM/1USD
-    sdkPrice = new BigNumber(1).dividedBy(opts.price).toPrecision(7);
+    sdkPrice = new BigNumber(bigOptsPrice).toPrecision(7);
 
     // Buying 10 USD (10*450)
-    sdkAmount = new BigNumber(opts.amount).toPrecision(7)
+    sdkAmount = new BigNumber(bigOptsAmount)
   } else {
     throw new Error('Invalid opts.type ' + opts.type);
   }
 
-  var transaction = new StellarSdk.TransactionBuilder(account)
-  transaction = transaction.addOperation(StellarSdk.Operation.manageOffer({
+  let operationOpts = {
     buying: sdkBuying,
     selling: sdkSelling,
     amount: String(sdkAmount),
     price: String(sdkPrice),
     offerId: 0, // 0 for new offer
-  }))
+  };
 
-  transaction = transaction.addMemo(StellarSdk.Memo.text('bookmaker ' + version))
-  transaction = transaction.build();
-
+  var transaction = new StellarSdk.TransactionBuilder(account)
+    .addOperation(StellarSdk.Operation.manageOffer(operationOpts))
+    .addMemo(StellarSdk.Memo.text('bookmaker ' + version))
+    .build();
   transaction.sign(keypair);
 
-  // Let's see the XDR (encoded in base64) of the transaction we just built
-  // console.log(transaction.toEnvelope().toXDR('base64'));
-
   let transactionResult = await Server.submitTransaction(transaction);
-  console.log(JSON.stringify(transactionResult, null, 2));
-  console.log('\nSuccess! View the transaction at: ');
-  console.log(transactionResult._links.transaction.href);
-  // return offersForTarget.records.length;
+  console.log('\n');
+  console.log(operationOpts);
+  console.log('View the transaction at: https://www.stellar.org/laboratory/#xdr-viewer?type=TransactionEnvelope&network=public&input=' + encodeURIComponent(transactionResult.envelope_xdr));
+  console.log('\n');
 }

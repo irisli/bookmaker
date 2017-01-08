@@ -4,8 +4,13 @@ const version = require('./height');
 const deleteAllOffers = require('./deleteAllOffers');
 const createOffer = require('./createOffer');
 
+// const Server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 const Server = new StellarSdk.Server('https://horizon.stellar.org');
 StellarSdk.Network.usePublicNetwork();
+
+let baseBuying = new StellarSdk.Asset('XLM', null);
+let counterSelling = new StellarSdk.Asset('USD', keys.issuer);
+let OrderBookSetup = Server.orderbook(baseBuying, counterSelling);
 
 async function main() {
 try {
@@ -18,17 +23,10 @@ try {
 // Base: JPY
 // Counter: USD
 
-let baseBuying = new StellarSdk.Asset('XLM', null);
-let counterSelling = new StellarSdk.Asset('USD', keys.issuer);
 
 
-let initialOrderbook = await Server.orderbook(baseBuying, counterSelling).call();
-console.log('Initial orderbook')
-console.log(initialOrderbook)
-
-
-let offersForBuyer = await Server.offers('accounts', keys.buyer.accountId()).call()
-let offersForSeller = await Server.offers('accounts', keys.seller.accountId()).call()
+// let offersForBuyer = await Server.offers('accounts', keys.buyer.accountId()).call()
+// let offersForSeller = await Server.offers('accounts', keys.seller.accountId()).call()
 
 let buyerAccount = await Server.loadAccount(keys.buyer.accountId());
 let sellerAccount = await Server.loadAccount(keys.seller.accountId());
@@ -39,16 +37,17 @@ let sellerAccount = await Server.loadAccount(keys.seller.accountId());
 ];
 
 
-let clearedOrderbook = await Server.orderbook(baseBuying, counterSelling).call();
-console.log('Cleared orderbook')
-console.log(clearedOrderbook)
+let clearedOrderbook = await OrderBookSetup.call();
+console.log('Orderbook successfully cleared')
+// console.log(clearedOrderbook)
 
 
+// Each of thes two offers should be about $10 USD
 let buyOpts = {
   type: 'buy',
   baseBuying,
   counterSelling,
-  price: 0.002 + Math.random().toPrecision(5)/10000,
+  price: 0.0020, // + Math.random().toPrecision(5)/100000,
   amount: 5000, // 5000 lumens
 };
 
@@ -56,17 +55,19 @@ let sellOpts = {
   type: 'sell',
   baseBuying,
   counterSelling,
-  price: 0.0025 + Math.random().toPrecision(5)/10000,
+  price: 0.0025,// + Math.random().toPrecision(5)/100000,
   amount: 4500, // 4500 lumens
 };
 
-await createOffer(Server, buyerAccount, keys.buyer, buyOpts);
-await createOffer(Server, sellerAccount, keys.seller, sellOpts);
+[
+  await createOffer(Server, buyerAccount, keys.buyer, buyOpts),
+  // await createOffer(Server, sellerAccount, keys.seller, sellOpts),
+]
+console.log('Offers successfully created');
 
 
-
-let populatedOrderbook = await Server.orderbook(baseBuying, counterSelling).call();
-console.log('Populated orderbook')
+let populatedOrderbook = await OrderBookSetup.call();
+console.log('Resulting orderbook')
 console.log(populatedOrderbook)
 
 
