@@ -34,7 +34,7 @@ async function main() {
       friendBot(keys.seller.accountId()),
       friendBot(keys.issuer.accountId()),
     ]);
-    console.log('Funded accounts with Friendbot');
+    console.log('// Funded accounts with Friendbot');
 
     let buyerAccount = await Server.loadAccount(keys.buyer.accountId());
     let sellerAccount = await Server.loadAccount(keys.seller.accountId());
@@ -86,7 +86,7 @@ async function main() {
     // have control to others offers
 
     let separation = 0.00001;
-    const numOffers = 5;
+    const numOffers = 35;
 
     let offerPromises = [];
 
@@ -103,7 +103,7 @@ async function main() {
       offerPromises.push(
         createOffer(Server, buyerAccount, keys.buyer, buyOpts)
       )
-      sleep.msleep(100);
+      sleep.msleep(250);
     }
     for (let i = 0; i < numOffers; i++) {
       let sellOpts = {
@@ -118,7 +118,7 @@ async function main() {
       offerPromises.push(
         createOffer(Server, sellerAccount, keys.seller, sellOpts)
       )
-      sleep.sleep(1);
+      sleep.msleep(250);
     }
 
     await Promise.all(offerPromises);
