@@ -95,7 +95,7 @@ async function main() {
         type: 'buy',
         baseBuying,
         counterSelling,
-        price: 0.0025 - separation * i,
+        price: 0.0025 - separation * (i + 1),
         // price: 0.00235 - Math.random().toPrecision(5) / 1000,
         // amount: Math.random()*Math.random()*10000, // 0-10000 lumens
         amount: 5000
@@ -110,7 +110,7 @@ async function main() {
         type: 'sell',
         baseBuying,
         counterSelling,
-        price: 0.0025 + separation * i,
+        price: 0.0025 + separation * (i + 1),
         amount: 5000,
         // price: 0.00235 + Math.random().toPrecision(5) / 1000,
         // amount: Math.random()*Math.random()*10000, // 0-10000 lumens
