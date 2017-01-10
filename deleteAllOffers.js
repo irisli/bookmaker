@@ -6,6 +6,7 @@ module.exports = async function deleteAllOffers(Server, account, keypair) {
   // Get the offer IDs
   const offersForTarget = await Server.offers('accounts', keypair.accountId())
     .order('asc')
+    .limit(20)
     .call();
 
   if (offersForTarget.records.length === 0) {
@@ -13,6 +14,7 @@ module.exports = async function deleteAllOffers(Server, account, keypair) {
   }
 
   let transaction = new StellarSdk.TransactionBuilder(account);
+  console.log(`Deleting ${offersForTarget.records.length} offers for ${keypair.accountId()}`);
   offersForTarget.records.forEach((record) => {
     const offerId = record.id;
     transaction = transaction.addOperation(StellarSdk.Operation.manageOffer({

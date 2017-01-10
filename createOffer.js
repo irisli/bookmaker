@@ -24,6 +24,7 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
   const bigOptsPrice = new BigNumber(opts.price.toPrecision(15));
   const bigOptsAmount = new BigNumber(opts.amount.toPrecision(15));
 
+  console.log(`Creating *${opts.type}* offer at price ${opts.price}`);
   if (opts.type === 'buy') {
     sdkBuying = opts.baseBuying; // lumens
     sdkSelling = opts.counterSelling; // USD
@@ -62,8 +63,7 @@ module.exports = async function createOffer(Server, account, keypair, opts) {
     .addMemo(StellarSdk.Memo.text(`bookmaker ${version}`))
     .build();
   transaction.sign(keypair);
-
-  const transactionResult = await Server.submitTransaction(transaction);
+  await Server.submitTransaction(transaction);
   // console.log('\n');
   // console.log(operationOpts);
   // console.log('View the transaction at: https://www.stellar.org/laboratory/#xdr-viewer?type=TransactionEnvelope&network=public&input=' + encodeURIComponent(transactionResult.envelope_xdr));

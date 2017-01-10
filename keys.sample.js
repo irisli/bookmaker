@@ -1,18 +1,17 @@
 const StellarSdk = require('stellar-sdk');
 
 module.exports = {
-  horizon: 'https://horizon.stellar.org', // Live network
-  // horizon: 'https://horizon-testnet.stellar.org', // Test network
+  // horizon: 'https://horizon.stellar.org', // Live network
+  horizon: 'https://horizon-testnet.stellar.org', // Test network
+  network: StellarSdk.Network.useTestNetwork(),
+  // network: StellarSdk.Network.usePublicNetwork(),
 
-  // Issuing account
-  // GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-  issuer: StellarSdk.Keypair.fromSeed('SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
+  // Issuer
+  issuer: StellarSdk.Keypair.random(),
 
   // holder of USD; buyer of XLM
-  // GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-  seller: StellarSdk.Keypair.fromSeed('SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
+  seller: StellarSdk.Keypair.random(),
 
   // holder of XLM; seller of XLM; buyer of USD
-  // GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-  buyer: StellarSdk.Keypair.fromSeed('SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
+  buyer: StellarSdk.Keypair.random(),
 };
