@@ -10,12 +10,14 @@ This is surprisingly difficult to do since there are about 8 different ways that
 ## Full cycle order creation from 0 to 5
 The bookmaker does all the necessary steps to get from accounts to having the asset have a valid orderbook with the right prices. The bookmaker does the following:
 
-0. Fetches the sequence numbers for all accounts
-1. Buyer and seller trusts the issuer
-2. Gives the buyer and seller some of the asset (super important step)
-3. Deletes the whole orderbook (can be easily commented out)
-4. Creates the offers to buy and sell the asset
-5. Displays the resulting orderbook
+0. Generates accounts to test with (can be easily changed)
+1. Funds issuer, buyer, and seller on the test network
+2. Fetches all their sequence numbers
+3. Buyer and seller trusts the issuer
+4. Issuer gives the buyer and seller some of the asset
+5. Deletes the whole orderbook (can be easily commented out)
+6. Creates the offers to buy and sell the asset
+7. Displays the resulting orderbook
 
 ## Example output
 ```js

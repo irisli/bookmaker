@@ -24,21 +24,25 @@ async function main() {
     // Base: JPY
     // Counter: USD
 
-    console.log('Issuer: ' + keys.issuer.accountId());
-    console.log('Bidder: ' + keys.buyer.accountId());
-    console.log('Seller: ' + keys.seller.accountId());
+    console.log('Issuer: ' + keys.issuer.accountId() + ' ' + keys.issuer.seed());
+    console.log('Bidder: ' + keys.buyer.accountId() + ' ' + keys.buyer.seed());
+    console.log('Seller: ' + keys.seller.accountId() + ' ' + keys.seller.seed());
+    console.log('Random: ' + keys.random.accountId() + ' ' + keys.random.seed());
+
     console.log();
 
     await Promise.all([
       friendBot(keys.buyer.accountId()),
       friendBot(keys.seller.accountId()),
       friendBot(keys.issuer.accountId()),
+      friendBot(keys.random.accountId()),
     ]);
     console.log('// Funded accounts with Friendbot');
 
     let buyerAccount = await Server.loadAccount(keys.buyer.accountId());
     let sellerAccount = await Server.loadAccount(keys.seller.accountId());
     const issuerAccount = await Server.loadAccount(keys.issuer.accountId());
+    const randomAccount = await Server.loadAccount(keys.random.accountId());
 
 
 
@@ -49,6 +53,7 @@ async function main() {
     await Promise.all([
       changeTrust(Server, buyerAccount, keys.buyer, changeTrustOp),
       changeTrust(Server, sellerAccount, keys.seller, changeTrustOp),
+      changeTrust(Server, randomAccount, keys.random, changeTrustOp),
     ]);
     console.log('// Trust extended to issuer')
 
@@ -86,7 +91,7 @@ async function main() {
     // have control to others offers
 
     let separation = 0.00001;
-    const numOffers = 35;
+    const numOffers = 15;
 
     let offerPromises = [];
 
