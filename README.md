@@ -7,17 +7,17 @@ This tool is useful for making sure that a trading client displays data properly
 
 This is surprisingly difficult to do since there are about 8 different ways that these orders could be built (2 prices * 2 amounts * 2 buy/sell ordering). This repository is the product of my 15 hours of figuring out how to get the orderbook populated in the correct way.
 
-## Full cycle order creation from 0 to 5
+## Full cycle order creation from 1 to 8
 The bookmaker does all the necessary steps to get from accounts to having the asset have a valid orderbook with the right prices. The bookmaker does the following:
 
-0. Generates accounts to test with (can be easily changed)
-1. Funds issuer, buyer, and seller on the test network
-2. Fetches all their sequence numbers
-3. Buyer and seller trusts the issuer
-4. Issuer gives the buyer and seller some of the asset
-5. Deletes the whole orderbook (can be easily commented out)
-6. Creates the offers to buy and sell the asset
-7. Displays the resulting orderbook
+1. Generates accounts to test with (can be easily changed)
+2. Funds issuer, buyer, and seller on the test network
+3. Fetches all their sequence numbers
+4. Buyer and seller trusts the issuer
+5. Issuer gives the buyer and seller some of the asset
+6. Deletes the whole orderbook (can be easily commented out)
+7. Creates the offers to buy and sell the asset
+8. Displays the resulting orderbook
 
 ## Example output
 ```js
